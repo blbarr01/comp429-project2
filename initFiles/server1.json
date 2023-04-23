@@ -1,0 +1,33 @@
+
+
+{
+    "num_servers": 4,
+    "num_edge": 3,
+    "server_ids":[
+        {
+            "server_id":1,
+            "server_ip": "x.x.x.x", 
+            "port": 4000
+        },
+        {
+            "server_id":2,
+            "server_ip": "x.x.x.x",
+            "port": 6000 
+        },
+        {
+            "server_id":3,
+            "server_ip": "x.x.x.x" ,
+            "port": 5000
+        },
+        {
+            "server_id":4,
+            "server_ip": "x.x.x.x",
+            "port": 7000 
+        }
+    ],
+    "edges":[
+        {"src": 1, "dest": 2, "cost": 7} ,
+        {"src": 1, "dest": 3, "cost": 4} , 
+        {"src": 1, "dest": 4, "cost": 5}  
+    ] 
+}
