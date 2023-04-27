@@ -13,12 +13,35 @@ def showPrompt():
     print("help")
     print("exit")
 
+
+def generateTopologyDict(lines):
+    l = len(lines)
+    topologyDict = {
+        "totalServers": lines[0].strip(),
+        "edgeNums":lines[1].strip(),
+        "topologyInfo":[],
+        "knownRoutes":[]
+    }
+
+
+    for i in range(2,5):
+        topologyDict['topologyInfo'].append(lines[i].strip())
+    for i in range(6, l):
+        topologyDict['knownRoutes'].append(lines[i].strip())
+
+    return topologyDict 
+
 #read Init file  
 def initServer(filePath, timeInterval):
-    print("initializing router table")
+    fileLineArray = []
     print("from init method", filePath)
     print("from init method", timeInterval)
+    print("initializing router table")
+    with open(filePath , 'r') as file:
+        lines = file.readlines()
 
+    topologyInfo = generateTopologyDict(lines)
+    print(topologyInfo)
     #broadcast update 
 def updateEdge():
     print("updating edge")
