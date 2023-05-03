@@ -1,9 +1,9 @@
-
-
+import json
+import argparse
 
 
 def showPrompt():
-    print("server -t <file-name> -i <interval>")     
+    print("init -t <file-name> -i <interval>")     
     print("update <server-ID1> <server-ID2> <link-cost>")
     print("step") #send packets to nieghbors 
     print("packets")
@@ -13,38 +13,6 @@ def showPrompt():
     print("help")
     print("exit")
 
-
-def generateTopologyDict(lines):
-    l = len(lines)
-    topologyDict = {
-        "totalServers": lines[0].strip(),
-        "edgeNums":lines[1].strip(),
-        "topologyInfo":[],
-        "knownRoutes":[]
-    }
-
-
-    for i in range(2,5):
-        topologyDict['topologyInfo'].append(lines[i].strip())
-    for i in range(6, l):
-        topologyDict['knownRoutes'].append(lines[i].strip())
-
-    return topologyDict 
-
-#read Init file  
-def initServer(filePath, timeInterval):
-    fileLineArray = []
-    print("from init method", filePath)
-    print("from init method", timeInterval)
-    print("initializing router table")
-    with open(filePath , 'r') as file:
-        lines = file.readlines()
-
-    topologyInfo = generateTopologyDict(lines)
-    print(topologyInfo)
-    #broadcast update 
-def updateEdge():
-    print("updating edge")
 
 
 def step():
@@ -62,15 +30,46 @@ def disableServer(serverID):
 def simulateCrash():
     print("simulating a crash")
 
+
+#read Init file  
+def initServer(filePath, timeInterval):
+    with open(filePath, 'r') as file:
+        initObj = json.load(file)
+        file.close()
+    print(json.dumps(initObj))
+    print(type(initObj))
+    initObj.update({"time_interval": timeInterval})
+    print(initObj)
+
+    #broadcast update 
+def updateEdge():
+    print("updating edge" )
+
+
+
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-t")
+    parser.add_argument("-i")
+    args = parser.parse_args()
+
+    init_file = args.t
+    update_interval = args.i
+
+    if init_file:
+        initServer(init_file, 30)
+    elif init_file and update_interval:
+        initServer( init_file,update_interval )
+
     showPrompt()
     #run main loop
     while True:
         #display server options
         user_input = input("make selection:")
         input_arr = user_input.split()
-        if input_arr[0] == "server":
-            initServer(input_arr[2], input_arr[4])
+        if input_arr[0] == "init":
+            # initServer(input_arr[2], input_arr[4])
+            print()
         elif input_arr[0] == "update":
             updateEdge()
         elif input_arr[0] == "step":
