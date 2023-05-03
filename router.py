@@ -1,4 +1,4 @@
-
+TOPOLOGY_TABLE = None
 
 
 
@@ -13,21 +13,28 @@ def showPrompt():
     print("help")
     print("exit")
 
-
+def stringToTupple(string):
+    tuple = string.split(" ")
+    for i in range(tuple):
+        tuple[i] = int(tuple[i])
+    return tuple
+    
 def generateTopologyDict(lines):
     l = len(lines)
     topologyDict = {
-        "totalServers": lines[0].strip(),
-        "edgeNums":lines[1].strip(),
-        "topologyInfo":[],
-        "knownRoutes":[]
+        "server_id": lines[0].strip(),
+        "total_servers": lines[1].strip(),
+        "edge_nums":lines[2].strip(),
+        "topology_info":[],
+        "known_routes":[]
     }
 
 
-    for i in range(2,5):
-        topologyDict['topologyInfo'].append(lines[i].strip())
-    for i in range(6, l):
-        topologyDict['knownRoutes'].append(lines[i].strip())
+    
+    for i in range(3,6):
+        topologyDict['topology_info'].append(stringToTupple(lines[i].strip()))
+    for i in range(7, l):
+        topologyDict['known_routes'].append(stringToTupple(lines[i].strip()))
 
     return topologyDict 
 
@@ -40,8 +47,9 @@ def initServer(filePath, timeInterval):
     with open(filePath , 'r') as file:
         lines = file.readlines()
 
-    topologyInfo = generateTopologyDict(lines)
-    print(topologyInfo)
+    TOPOLOGY_TABLE = generateTopologyDict(lines)
+    print(TOPOLOGY_TABLE)
+    
     #broadcast update 
 def updateEdge():
     print("updating edge")
@@ -54,7 +62,7 @@ def displayPackets():
     print("you've received this many packets")
 
 def displayRoutingTable():
-    print("here are all the routes i got")
+    print(TOPOLOGY_TABLE)
 
 def disableServer(serverID):
     print(f"we'll shutdown server {serverID}")
@@ -63,6 +71,7 @@ def simulateCrash():
     print("simulating a crash")
 
 if __name__ == '__main__':
+    
     showPrompt()
     #run main loop
     while True:
