@@ -3,7 +3,7 @@ TOPOLOGY_TABLE = None
 
 
 def showPrompt():
-    print("server -t <file-name> -i <interval>")     
+    print("init -t <file-name> -i <interval>")     
     print("update <server-ID1> <server-ID2> <link-cost>")
     print("step") #send packets to nieghbors 
     print("packets")
@@ -70,6 +70,23 @@ def disableServer(serverID):
 def simulateCrash():
     print("simulating a crash")
 
+
+#read Init file  
+def initServer(filePath, timeInterval):
+    with open(filePath, 'r') as file:
+        initObj = json.load(file)
+        file.close()
+    print(json.dumps(initObj))
+    print(type(initObj))
+    initObj.update({"time_interval": timeInterval})
+    print(initObj)
+
+    #broadcast update 
+def updateEdge():
+    print("updating edge" )
+
+
+
 if __name__ == '__main__':
     
     showPrompt()
@@ -78,8 +95,9 @@ if __name__ == '__main__':
         #display server options
         user_input = input("make selection:")
         input_arr = user_input.split()
-        if input_arr[0] == "server":
-            initServer(input_arr[2], input_arr[4])
+        if input_arr[0] == "init":
+            # initServer(input_arr[2], input_arr[4])
+            print()
         elif input_arr[0] == "update":
             updateEdge()
         elif input_arr[0] == "step":
