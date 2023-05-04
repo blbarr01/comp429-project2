@@ -2,7 +2,7 @@ import json
 import socket
 from threading import Thread
 
-sever_thread = None
+SERVER_THREAD = None
 TOPOLOGY_TABLE = None
 
 
@@ -19,62 +19,95 @@ def showPrompt():
 
 
 #read Init file  
-def initServer(filePath, timeInterval):
-    with open(filePath, 'r') as file:
+def initServer(file_path, time_interval):
+    #open up the json object and read it into the program 
+    #assign it to a global for access 
+    with open(file_path, 'r') as file:
         data = json.load(file)
-    
+    global TOPOLOGY_TABLE
+    TOPOLOGY_TABLE = data
+
+    # pull out the server topology
+    global server_topology 
+    server_topology = data["server_ids"]
+
+    # get the info for the local machine
     my_id = data['server_id']
-    global my_info 
-    server_ids = data["server_ids"]
-    my_info = extractInfo(my_id, server_ids)
-    print("my info", my_info)
-    global server_thread
-    server_thread = Thread(target = serverThread,args=(my_info), daemon=True )
-    server_thread.start()
+    server_info = extractServerInfo(my_id, server_topology)
+    
+    #prints to see
+    print("server info ", server_info)
+    print("server_topology", server_topology)
+
+    #start the thread for the server to listen on 
+    global SERVER_THREAD
+    SERVER_THREAD = Thread(target = serverThread,args=(server_info), daemon=True )
+    SERVER_THREAD.start()
 
 
 
 def serverThread(sid, ip, port):
     print(sid, ip, port )
-    #server sockets cannot be DGRAM, 
+    # open a server socket to listen for incoming packets
+    #recvfrom blocks till it gets something
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server_socket:
         server_socket.bind((ip, port))
         while True:
             data, addr = server_socket.recvfrom(1024)
             if data: 
-                updateTable(data)         
+                updateTable(data)   
+
+#here we run the distance vector protocol        
+def updateTable():
+    print()
 
 def updateEdge():
     print("updating edge")
 
-def extractInfo(my_id, server_ids):
-    for server_id in server_ids:
+def extractServerInfo(my_id, server_topology):
+    for server_id in server_topology:
         if server_id['server_id'] is my_id:
-            my_info = list(server_id.values())
-            return my_info 
-        
-def updateTable():
-    print()
+            server_info = list(server_id.values())
+            return server_info 
+
+
 
 def step():
     #format the routing table into a message we want to send 
     #for each server in our topology
-        #generate a socket
+    server_topology
+    for server in server_topology:
+        if server['server_id'] is TOPOLOGY_TABLE["server_id"]:
+            continue
+        sendPacket(server)
         
 
-    print("sending packets to the neighbors")
-
+def sendPacket(dest):
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client_socket:
+        endpoint = dictionayToTuple(dest)
+        print(endpoint)
+        # we'll need to send the routes here we need to convert this into a byte stream
+        update_packet = ''
+        client_socket.sendto(update_packet, endpoint)
+    client_socket.close()
 def displayPackets():
     print("you've received this many packets")
 
 def displayRoutingTable():
     print(TOPOLOGY_TABLE)
 
+def dictionayToTuple(dest):
+    return(dest['server_ip'], dest['port'])
+
 def disableServer(serverID):
     print(f"we'll shutdown server {serverID}")
 
 def simulateCrash():
     print("simulating a crash")
+    #loop through the list of available connections
+        #open up a client for each
+        #send all neihbors a special packet with edge costs of infinty 
+        #  
 
 def processInput(user_input):
     input_arr = user_input.split()
@@ -95,6 +128,8 @@ def processInput(user_input):
         simulateCrash()
     elif input_arr[0] == "help":
         showPrompt()
+    elif input_arr[0] == "quick":
+        initServer("./initFiles/server1.json", 30)
     elif input_arr[0] == "exit" or input_arr[0] =="q":
         exit()
 
