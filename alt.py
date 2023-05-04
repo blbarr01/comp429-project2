@@ -39,9 +39,9 @@ def initServer(filePath, timeInterval):
 
 def serverThread(sid, ip, port):
     print(sid, ip, port )
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server_socket:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
         server_socket.bind((ip, port))
-        server_socket.listen()         
+        server_socket.listen(5)         
 
 def updateEdge():
     print("updating edge")
