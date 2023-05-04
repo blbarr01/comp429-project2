@@ -1,10 +1,10 @@
 import json
 import socket
 from threading import Thread
+from sys import maxsize
 
 SERVER_THREAD = None
 TOPOLOGY_TABLE = None
-
 
 def showPrompt():
     print("init -t <file-name> -i <interval>")     
@@ -30,15 +30,16 @@ def initServer(file_path, time_interval):
     # pull out the server topology
     global server_topology 
     server_topology = data["server_ids"]
+    edges = data["edges"]
+
+    global ROUTING_TABLE 
+    ROUTING_TABLE = generateRoutingTable(edges)
 
     # get the info for the local machine
     my_id = data['server_id']
+    print("my id ", my_id)
     server_info = extractServerInfo(my_id, server_topology)
     
-    #prints to see
-    print("server info ", server_info)
-    print("server_topology", server_topology)
-
     #start the thread for the server to listen on 
     global SERVER_THREAD
     SERVER_THREAD = Thread(target = serverThread,args=(server_info), daemon=True )
@@ -70,15 +71,27 @@ def extractServerInfo(my_id, server_topology):
             server_info = list(server_id.values())
             return server_info 
 
-
+def generateRoutingTable(edges): 
+    print(edges)
+    n = TOPOLOGY_TABLE["num_servers"]
+    routing_table = {f"{i+1}": None for i in range(n)}
+    
+    for edge in edges:
+        print
+    sid = TOPOLOGY_TABLE['server_id']
+    print("server id",TOPOLOGY_TABLE["server_id"], sid )
+    #update rout for self 
+    routing_table.update({f"{sid}":0})
+    
+    print(routing_table)
 
 def step():
-    #format the routing table into a message we want to send 
-    #for each server in our topology
+    #for each server in our topology, send 
     server_topology
     for server in server_topology:
         if server['server_id'] is TOPOLOGY_TABLE["server_id"]:
             continue
+        print(server)
         sendPacket(server)
         
 
@@ -90,6 +103,7 @@ def sendPacket(dest):
         update_packet = ''
         client_socket.sendto(update_packet, endpoint)
     client_socket.close()
+
 def displayPackets():
     print("you've received this many packets")
 
@@ -107,7 +121,6 @@ def simulateCrash():
     #loop through the list of available connections
         #open up a client for each
         #send all neihbors a special packet with edge costs of infinty 
-        #  
 
 def processInput(user_input):
     input_arr = user_input.split()
