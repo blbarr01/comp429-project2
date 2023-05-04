@@ -26,10 +26,7 @@ def initServer(filePath, timeInterval):
     my_id = data['server_id']
     global my_info 
     server_ids = data["server_ids"]
-    for server_id in server_ids:
-        if server_id['server_id'] is my_id:
-            my_info = list(server_id.values())
-            break
+    my_info = extractInfo(my_id, server_ids)
     print("my info", my_info)
     global server_thread
     server_thread = Thread(target = serverThread,args=(my_info), daemon=True )
@@ -39,15 +36,32 @@ def initServer(filePath, timeInterval):
 
 def serverThread(sid, ip, port):
     print(sid, ip, port )
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+    #server sockets cannot be DGRAM, 
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server_socket:
         server_socket.bind((ip, port))
-        server_socket.listen(5)         
+        while True:
+            data, addr = server_socket.recvfrom(1024)
+            if data: 
+                updateTable(data)         
 
 def updateEdge():
     print("updating edge")
 
+def extractInfo(my_id, server_ids):
+    for server_id in server_ids:
+        if server_id['server_id'] is my_id:
+            my_info = list(server_id.values())
+            return my_info 
+        
+def updateTable():
+    print()
 
 def step():
+    #format the routing table into a message we want to send 
+    #for each server in our topology
+        #generate a socket
+        
+
     print("sending packets to the neighbors")
 
 def displayPackets():
