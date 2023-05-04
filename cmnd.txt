@@ -1,1 +1,1 @@
-server -t initFiles/01_server_init.txt -i 30
+init -t initFiles/01_server_init.txt -i 30

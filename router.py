@@ -15,7 +15,7 @@ def showPrompt():
 
 def stringToTupple(string):
     tuple = string.split(" ")
-    for i in range(tuple):
+    for i in range(len(tuple)):
         tuple[i] = int(tuple[i])
     return tuple
     
@@ -29,10 +29,8 @@ def generateTopologyDict(lines):
         "known_routes":[]
     }
 
-
-    
     for i in range(3,6):
-        topologyDict['topology_info'].append(stringToTupple(lines[i].strip()))
+        topologyDict['topology_info'].append(lines[i].strip())
     for i in range(7, l):
         topologyDict['known_routes'].append(stringToTupple(lines[i].strip()))
 
@@ -47,6 +45,7 @@ def initServer(filePath, timeInterval):
     with open(filePath , 'r') as file:
         lines = file.readlines()
 
+    global TOPOLOGY_TABLE
     TOPOLOGY_TABLE = generateTopologyDict(lines)
     print(TOPOLOGY_TABLE)
     
@@ -71,19 +70,7 @@ def simulateCrash():
     print("simulating a crash")
 
 
-#read Init file  
-def initServer(filePath, timeInterval):
-    with open(filePath, 'r') as file:
-        initObj = json.load(file)
-        file.close()
-    print(json.dumps(initObj))
-    print(type(initObj))
-    initObj.update({"time_interval": timeInterval})
-    print(initObj)
 
-    #broadcast update 
-def updateEdge():
-    print("updating edge" )
 
 
 
@@ -96,7 +83,7 @@ if __name__ == '__main__':
         user_input = input("make selection:")
         input_arr = user_input.split()
         if input_arr[0] == "init":
-            # initServer(input_arr[2], input_arr[4])
+            initServer(input_arr[2], input_arr[4])
             print()
         elif input_arr[0] == "update":
             updateEdge()
@@ -114,5 +101,3 @@ if __name__ == '__main__':
             showPrompt()
         elif input_arr[0] == "exit":
             exit(1)
-
-
