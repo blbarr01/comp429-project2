@@ -1,5 +1,5 @@
 {
-    "server_id":1,
+    "server_id":4,
     "num_servers": 4,
     "num_edge": 3,
     "server_ids":[
@@ -25,8 +25,6 @@
         }
     ],
     "edges":[
-        {"src": 1, "dest": 2, "cost": 7} ,
-        {"src": 1, "dest": 3, "cost": 4} , 
-        {"src": 1, "dest": 4, "cost": 5}  
+        {"src": 4, "dest": 1, "cost": 5}  
     ] 
 }
