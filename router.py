@@ -72,18 +72,28 @@ def extractServerInfo(my_id, server_topology):
             return server_info 
 
 def generateRoutingTable(edges): 
-    print(edges)
+    print("edges:", edges)
     n = TOPOLOGY_TABLE["num_servers"]
-    routing_table = {f"{i+1}": None for i in range(n)}
+    sid = TOPOLOGY_TABLE['server_id']
+    routing_table = {f"{i+1}": maxsize for i in range(n)}
+    routing_table.update({f"{sid}":0})
+    print("routing table:", routing_table)
+
+    for edge in edges:
+        dest = edge['dest']
+        routing_table[f'{dest}'] = edge['cost']
+
+    print("routing table:", routing_table)
     
+"""     
     for edge in edges:
         print
     sid = TOPOLOGY_TABLE['server_id']
     print("server id",TOPOLOGY_TABLE["server_id"], sid )
     #update rout for self 
-    routing_table.update({f"{sid}":0})
+    routing_table.update({f"{sid}":0}) """
     
-    print(routing_table)
+    
 
 def step():
     #for each server in our topology, send 
@@ -141,9 +151,9 @@ def processInput(user_input):
         simulateCrash()
     elif input_arr[0] == "help":
         showPrompt()
-    elif input_arr[0] == "quick":
-        initServer("./initFiles/server1.json", 30)
-    elif input_arr[0] == "exit" or input_arr[0] =="q":
+    elif input_arr[0] == "quick" or input_arr[0] =="q" :
+        initServer("./initFiles/server3.json", 30)
+    elif input_arr[0] == "exit" or input_arr[0] =="e":
         exit()
 
 
