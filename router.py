@@ -1,3 +1,4 @@
+from copy import deepcopy
 import json
 import socket
 from threading import Thread
@@ -59,8 +60,8 @@ def serverThread(sid, ip, port):
                 updateTable(data)   
 
 #here we run the distance vector protocol        
-def updateTable():
-    print()
+def updateTable(data):
+    print(data)
 
 def updateEdge():
     print("updating edge")
@@ -84,14 +85,8 @@ def generateRoutingTable(edges):
         routing_table[f'{dest}'] = edge['cost']
 
     print("routing table:", routing_table)
-    
-"""     
-    for edge in edges:
-        print
-    sid = TOPOLOGY_TABLE['server_id']
-    print("server id",TOPOLOGY_TABLE["server_id"], sid )
-    #update rout for self 
-    routing_table.update({f"{sid}":0}) """
+    return routing_table
+
     
     
 
@@ -106,12 +101,12 @@ def step():
         
 
 def sendPacket(dest):
+    packet = deepcopy(ROUTING_TABLE)
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client_socket:
         endpoint = dictionayToTuple(dest)
-        print(endpoint)
         # we'll need to send the routes here we need to convert this into a byte stream
-        update_packet = ''
-        client_socket.sendto(update_packet, endpoint)
+        network_packet = json.dumps(packet).encode()
+        client_socket.sendto(network_packet, endpoint)
     client_socket.close()
 
 def displayPackets():
@@ -151,10 +146,17 @@ def processInput(user_input):
         simulateCrash()
     elif input_arr[0] == "help":
         showPrompt()
-    elif input_arr[0] == "quick" or input_arr[0] =="q" :
+    elif input_arr[0] =="q1":
+        initServer("./initFiles/server1.json", 30)
+    elif input_arr[0] =="q2":
+        initServer("./initFiles/server2.json", 30)
+    elif input_arr[0] =="q3":
         initServer("./initFiles/server3.json", 30)
+    elif input_arr[0] =="q4":
+        initServer("./initFiles/server4.json", 30)
     elif input_arr[0] == "exit" or input_arr[0] =="e":
         exit()
+
 
 
 
