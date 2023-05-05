@@ -63,8 +63,14 @@ def serverThread(sid, ip, port):
 def updateTable(data):
     print(data)
 
-def updateEdge():
-    print("updating edge")
+def updateEdge(server1_id, server2_id, new_cost):
+    global TOPOLOGY_TABLE
+    for edge in TOPOLOGY_TABLE['edges']:
+        if (edge['src'] == server1_id and edge['dest'] == server2_id) or \
+                (edge['src'] == server2_id and edge['dest'] == server1_id):
+            edge['cost'] = new_cost
+            break
+    print(f"Updated cost between Server {server1_id} and Server {server2_id} to {new_cost}.")
 
 def extractServerInfo(my_id, server_topology):
     for server_id in server_topology:
@@ -133,7 +139,13 @@ def processInput(user_input):
         initServer(input_arr[2], input_arr[4])
         print("finished init")
     elif input_arr[0] == "update":
-        updateEdge()
+        if len(input_arr) == 4:
+            server1_id = int(input_arr[1])
+            server2_id = int(input_arr[2])
+            new_cost = int(input_arr[3])
+            updateEdge(server1_id, server2_id, new_cost)
+        else:
+            print("Invalid command. Usage: update <server-ID1> <server-ID2> <link-cost>")
     elif input_arr[0] == "step":
         step()
     elif input_arr[0] == "packets":
